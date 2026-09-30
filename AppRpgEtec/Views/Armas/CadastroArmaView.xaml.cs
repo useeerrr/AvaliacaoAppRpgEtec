@@ -2,36 +2,32 @@ using AppRpgEtec.ViewModels.Armas;
 
 namespace AppRpgEtec.Views.Armas;
 
+[QueryProperty(nameof(ArmaId), "pId")]
 public partial class CadastroArmaView : ContentPage
 {
-	private CadastroArmaView cadViewModel;
-	public CadastroArmaView()
-	{
-		InitializeComponent();
+    private CadastroArmaViewModel cadViewModel;
 
-		cadViewModel = new CadastroArmaView();
-		BindingContext = cadViewModel;
-		Title = "Nova Arma";
-
-	}
-
-    protected override async void OnAppearing()
+    public string ArmaId
     {
-        base.OnAppearing();
-
-        string id = Shell.Current.CurrentState.Location.OriginalString
-            .Split("pId=")
-            .LastOrDefault();
-
-        if (int.TryParse(id, out int armaId))
+        set
         {
-            await cadViewModel.CarregarArma(armaId);
-            Title = "Editar Arma";
+            if (int.TryParse(value, out int id))
+            {
+                Title = "Editar Arma";
+
+                _ = cadViewModel.CarregarArma(id);
+            }
         }
     }
 
-    private async Task CarregarArma(int armaId)
+    public CadastroArmaView()
     {
-        throw new NotImplementedException();
+        InitializeComponent();
+
+        cadViewModel = new CadastroArmaViewModel();
+
+        BindingContext = cadViewModel;
+
+        Title = "Nova Arma";
     }
 }

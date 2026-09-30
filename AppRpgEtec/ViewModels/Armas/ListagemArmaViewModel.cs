@@ -1,93 +1,110 @@
 ﻿using AppRpgEtec.Models;
 using AppRpgEtec.Services.Armas;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows.Input;
 
 namespace AppRpgEtec.ViewModels.Armas
 {
- 
-        public class ListagemArmaViewModel : BaseViewModel
+    public class ListagemArmaViewModel : BaseViewModel
+    {
+        private ArmaService aService;
+
+        public ObservableCollection<Arma> Armas { get; set; }
+
+
+        public ListagemArmaViewModel()
         {
-            private ArmaService aService;
+            string token = Preferences.Get(
+                "UsuarioToken",
+                string.Empty);
 
-            public ObservableCollection<Arma> Armas { get; set; }
+            aService = new ArmaService(token);
 
-            public ListagemArmaViewModel()
-            {
-                string token = Preferences.Get("UsuarioToken", string.Empty);
+            Armas = new ObservableCollection<Arma>();
 
-                aService = new ArmaService(token);
-                Armas = new ObservableCollection<Arma>();
 
-                _ = ObterArmas();
+            _ = ObterArmas();
 
-                RemoverArmaCommand = new Command<Arma>(async (Arma a) =>
+
+            RemoverArmaCommand = new Command<Arma>(
+                async (Arma a) =>
                 {
                     await RemoverArma(a);
                 });
-            }
 
-            public ICommand RemoverArmaCommand { get; }
 
-            public async Task ObterArmas()
-            {
-                try
+            NovoArmaCommand = new Command(
+                async () =>
                 {
-                    Armas = await aService.GetArmasAsync();
-                    OnPropertyChanged(nameof(Armas));
-                }
-                catch (Exception ex)
+                    await Shell.Current.GoToAsync(
+                        "cadArmaView");
+                });
+
+
+            EditarArmaCommand = new Command<Arma>(
+                async (Arma a) =>
                 {
-                    await Application.Current.MainPage
-                        .DisplayAlertAsync("Ops",
-                        ex.Message + " Detalhes: " + ex.InnerException, "Ok");
-                }
-            }
+                    await Shell.Current.GoToAsync(
+                        $"cadArmaView?pId={a.Id}");
+                });
+        }
 
-            public async Task RemoverArma(Arma a)
-            {
-                try
-                {
-                    if (await Application.Current.MainPage
-                        .DisplayAlertAsync("Confirmação",
-                        $"Confirma a remoção de {a.Nome}?",
-                        "Sim", "Não"))
-                    {
-                        await aService.DeleteArmaAsync(a.Id);
 
-                        await Application.Current.MainPage
-                            .DisplayAlertAsync("Mensagem",
-                            "Arma removida com sucesso!", "Ok");
+        public ICommand RemoverArmaCommand { get; }
 
-                        _ = ObterArmas();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await Application.Current.MainPage
-                        .DisplayAlertAsync("Ops",
-                        ex.Message + " Detalhes: " + ex.InnerException, "Ok");
-                }
-            }
-        private Arma armaSelecionada;
+        public ICommand NovoArmaCommand { get; }
 
-        public Arma ArmaSelecionada
+        public ICommand EditarArmaCommand { get; }
+
+
+        public async Task ObterArmas()
         {
-            get { return armaSelecionada; }
-            set
+            try
             {
-                if (value != null)
-                {
-                    armaSelecionada = value;
+                Armas = await aService.GetArmasAsync();
 
-                    Shell.Current.GoToAsync($"cadArmaView?pId={armaSelecionada.Id}");
+                OnPropertyChanged(nameof(Armas));
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Ops",
+                    ex.Message + " Detalhes: " + ex.InnerException,
+                    "Ok");
+            }
+        }
+
+
+        public async Task RemoverArma(Arma a)
+        {
+            try
+            {
+                if (await Application.Current.MainPage.DisplayAlert(
+                    "Confirmação",
+                    $"Confirma a remoção de {a.Nome}?",
+                    "Sim",
+                    "Não"))
+                {
+                    await aService.DeleteArmaAsync(a.Id);
+
+
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Mensagem",
+                        "Arma removida com sucesso!",
+                        "Ok");
+
+
+                    await ObterArmas();
                 }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Ops",
+                    ex.Message + " Detalhes: " + ex.InnerException,
+                    "Ok");
             }
         }
     }
-    }
-
+}
 

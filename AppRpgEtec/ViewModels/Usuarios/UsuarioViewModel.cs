@@ -82,7 +82,7 @@ namespace AppRpgEtec.ViewModels.Usuarios
                     await Application.Current.MainPage
                         .DisplayAlertAsync("Informação", mensagem, "Ok");
 
-                    Application.Current.MainPage = new CadastroArmaView();
+                    Application.Current.MainPage = new AppShell();
                 }
                 else
                 {

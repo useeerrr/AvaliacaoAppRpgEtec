@@ -1,48 +1,73 @@
 <?xml version="1.0" encoding="utf-8" ?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AppRpgEtec.Views.Armas.ListagemView"
-             Title="ListagemView">
+             Title="Lista de Armas">
 
     <ScrollView>
-        <VerticalStackLayout Padding="10,0,0,0" VerticalOptions="Fill">
+
+        <VerticalStackLayout Padding="10">
+
+            <Button Text="Nova Arma"
+                    Command="{Binding NovoArmaCommand}" />
+
 
             <CollectionView x:Name="collectionView"
                             ItemsSource="{Binding Armas}"
-                            VerticalOptions="Fill"
-                            SelectionMode="Single"
-                SelectedItem="{Binding ArmaSelecionada}">
+                            SelectionMode="None">
 
                 <CollectionView.ItemTemplate>
+
                     <DataTemplate>
+
                         <SwipeView>
 
                             <SwipeView.RightItems>
+
                                 <SwipeItems>
+
                                     <SwipeItem Text="Remover"
                                                IsDestructive="True"
                                                Command="{Binding BindingContext.RemoverArmaCommand,
                                                Source={x:Reference collectionView}}"
                                                CommandParameter="{Binding .}" />
+
                                 </SwipeItems>
+
                             </SwipeView.RightItems>
 
-                            <Grid Padding="10" RowDefinitions="Auto,Auto">
+
+                            <Grid Padding="10"
+                                  RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="*,Auto,Auto">
 
                                 <Label Grid.Row="0"
+                                       Grid.Column="0"
                                        Text="{Binding Nome}"
                                        FontSize="18"
                                        FontAttributes="Bold" />
 
+
                                 <Label Grid.Row="1"
+                                       Grid.Column="0"
                                        Text="{Binding Dano}"
                                        FontSize="14" />
+
 
                                 <Button Grid.Row="0"
                                         Grid.RowSpan="2"
                                         Grid.Column="1"
+                                        Text="Editar"
+                                        Command="{Binding BindingContext.EditarArmaCommand,
+                                        Source={x:Reference collectionView}}"
+                                        CommandParameter="{Binding .}" />
+
+
+                                <Button Grid.Row="0"
+                                        Grid.RowSpan="2"
+                                        Grid.Column="2"
                                         Text="🗑"
-                                        BackgroundColor="Transparent"
                                         TextColor="Red"
                                         Command="{Binding BindingContext.RemoverArmaCommand,
                                         Source={x:Reference collectionView}}"
@@ -51,12 +76,15 @@
                             </Grid>
 
                         </SwipeView>
+
                     </DataTemplate>
+
                 </CollectionView.ItemTemplate>
 
             </CollectionView>
 
         </VerticalStackLayout>
+
     </ScrollView>
 
 </ContentPage>
